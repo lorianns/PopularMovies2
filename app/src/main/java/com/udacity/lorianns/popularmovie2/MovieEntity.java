@@ -11,6 +11,7 @@ import org.json.JSONObject;
  */
 public class MovieEntity implements Parcelable {
 
+    final String _ID = "id";
     final String _IMAGE = "poster_path";
     final String _TITLE = "original_title";
     final String _RELEASE_DATE = "release_date";
@@ -18,14 +19,21 @@ public class MovieEntity implements Parcelable {
     final String _RATING = "vote_average";
     final String _IMAGE_BASE_URL = "http://image.tmdb.org/t/p/w185/";
 
+    private String id;
     private String imagePath;
     private String title;
     private String releaseDate;
     private String overview;
     private String rating;
 
+    private Boolean isFavorite;
+    private Boolean isHighRated;
+    private Boolean isMostPopular;
+
+
     public MovieEntity(JSONObject movieJson) throws JSONException {
 
+        id = movieJson.getString(_ID);
         imagePath = _IMAGE_BASE_URL + movieJson.getString(_IMAGE);
         title = movieJson.getString(_TITLE);
         releaseDate = movieJson.getString(_RELEASE_DATE);
@@ -34,6 +42,7 @@ public class MovieEntity implements Parcelable {
     }
 
     public MovieEntity(Parcel parcel) {
+        id = parcel.readString();
         imagePath = parcel.readString();
         title = parcel.readString();
         releaseDate = parcel.readString();
@@ -61,11 +70,20 @@ public class MovieEntity implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(id);
         parcel.writeString(imagePath);
         parcel.writeString(title);
         parcel.writeString(releaseDate);
         parcel.writeString(overview);
         parcel.writeString(rating);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getImagePath() {
@@ -107,4 +125,6 @@ public class MovieEntity implements Parcelable {
     public void setRating(String rating) {
         this.rating = rating;
     }
+
+
 }

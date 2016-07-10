@@ -1,6 +1,7 @@
 package com.udacity.lorianns.popularmovie2;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -59,10 +60,10 @@ public class SimpleImageRecyclerViewAdapter extends RecyclerView.Adapter<SimpleI
             @Override
             public void onClick(View v) {
                 Context context = v.getContext();
-//                Intent intent = new Intent(context, MovieDetailActivity.class);
-//                intent.putExtra(MovieDetailActivity.EXTRA_NAME, holder.mMovieEntity);
+                Intent intent = new Intent(context, MovieDetailActivity.class);
+                intent.putExtra("MOVIE_DATA", holder.mMovieEntity);
 
-//                context.startActivity(intent);
+                context.startActivity(intent);
             }
         });
 
@@ -73,5 +74,9 @@ public class SimpleImageRecyclerViewAdapter extends RecyclerView.Adapter<SimpleI
     @Override
     public int getItemCount() {
         return mValues.size();
+    }
+
+    public void clear(){
+        mValues.clear();
     }
 }
