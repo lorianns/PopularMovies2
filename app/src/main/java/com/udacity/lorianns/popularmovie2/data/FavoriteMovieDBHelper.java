@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.udacity.lorianns.popularmovie2.data.FavoriteMovieContract.MovieEntry;
+import com.udacity.lorianns.popularmovie2.data.FavoriteMovieContract.FavoriteMovieEntry;
 
 /**
  * Created by lorianns on 7/10/16.
@@ -24,7 +25,12 @@ public class FavoriteMovieDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
-        final String SQL_CREATE_WEATHER_TABLE = "CREATE TABLE " + MovieEntry.TABLE_NAME + " (" +
+        final String SQL_CREATE_FAVORITE_MOVIE_TABLE = "CREATE TABLE " + FavoriteMovieEntry.TABLE_NAME + " (" +
+                FavoriteMovieEntry._ID + " INTEGER PRIMARY KEY," +
+                FavoriteMovieEntry.COLUMN_MOVIE_KEY + " TEXT UNIQUE NOT NULL" +
+                " );";
+        
+        final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieEntry.TABLE_NAME + " (" +
 
                 MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
 
@@ -36,9 +42,19 @@ public class FavoriteMovieDBHelper extends SQLiteOpenHelper {
 
                 MovieEntry.COLUMN_SYNOPSIS + " TEXT NOT NULL, " +
 
-                ";";
+        // Set up the location column as a foreign key to location table.
+        " FOREIGN KEY (" + FavoriteMovieEntry.COLUMN_MOVIE_KEY + ") REFERENCES " +
+                MovieEntry.TABLE_NAME + " (" + MovieEntry._ID + ") " +
 
-        sqLiteDatabase.execSQL(SQL_CREATE_WEATHER_TABLE);
+                ");";
+
+//                // To assure the application have just one weather entry per day
+//                // per location, it's created a UNIQUE constraint with REPLACE strategy
+//                " UNIQUE (" + FavoriteMovieEntry.COLUMN_MOVIE_KEY + ", " +
+//                MovieEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
+        
+        sqLiteDatabase.execSQL(SQL_CREATE_FAVORITE_MOVIE_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
     }
 
     @Override

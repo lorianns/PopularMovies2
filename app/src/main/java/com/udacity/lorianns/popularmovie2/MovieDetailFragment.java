@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,18 +16,16 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.udacity.lorianns.popularmovie2.data.FavoriteMovieContract;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MovieDetailFragment extends Fragment{
+public class MovieDetailFragment extends Fragment implements FetchMovieReviewTask.FetchMovieReviewCallback, FetchMovieVideoTask.FetchMovieVideoCallback{
 
-    @BindView(R.id.btnFavorite)
-    Button btnFavorite;
+//    @BindView(R.id.btnFavorite)
+//    Button btnFavorite;
 
     private MovieEntity movie;
 
@@ -61,15 +60,41 @@ public class MovieDetailFragment extends Fragment{
 
             Picasso.with(getActivity()).load(movie.getImagePath()).into(ivPoster);
         }
+
+        Button btnFavorite = (Button) rootView.findViewById(R.id.btnFavorite);
+        btnFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                insertData();
+            }
+        });
         return rootView;
 
     }
 
-    @OnClick(R.id.btnFavorite)
-    private void onClickFavorite(Button button){
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        fetchMovieReviewData(movie.getId());
+        fetchMovieVideoData(movie.getId());
     }
 
+    private void fetchMovieReviewData(String id) {
+        FetchMovieReviewTask movieReviewTask = new FetchMovieReviewTask();
+        movieReviewTask.setListener(this);
+        movieReviewTask.execute(id);
+    }
+
+    private void fetchMovieVideoData(String id) {
+        FetchMovieVideoTask movieVideoTask = new FetchMovieVideoTask();
+        movieVideoTask.setListener(this);
+        movieVideoTask.execute(id);
+    }
+
+//    @OnClick(R.id.btnFavorite)
+//    void onClickFavoriteData(Button view){
+//        insertData();
+//    }
 
     // insert data into database
     public void insertData(){
@@ -87,4 +112,24 @@ public class MovieDetailFragment extends Fragment{
                 movieValues);
     }
 
+    @Override
+    public void onMovieReviewPreExecute() {
+//        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onMovieReviewFetchCompleted(ReviewEntity[] result) {
+        Log.e("List", result.toString());
+//        progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onMovieVideoPreExecute() {
+
+    }
+
+    @Override
+    public void onMovieVideoFetchCompleted(VideoEntity[] result) {
+        Log.e("List", result.toString());
+    }
 }
