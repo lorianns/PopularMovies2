@@ -14,7 +14,7 @@ public class FavoriteMovieContract {
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
-    public static final String PATH_FAVORITE_MOVIE= "movie";
+    public static final String PATH_FAVORITE_MOVIE= "fav_movie";
     public static final String PATH_MOVIE= "movie";
 
     /* Inner class that defines the table contents of the movie table */
@@ -29,7 +29,7 @@ public class FavoriteMovieContract {
 
         public static final String TABLE_NAME = "favorite_movie";
         // Movie id as returned by API, to identify the movie
-        public static final String COLUMN_MOVIE_KEY = "id";
+        public static final String COLUMN_MOVIE_KEY = "mov_key_id";
 
         public static final int COL_MOVIE_ID = 0;
 

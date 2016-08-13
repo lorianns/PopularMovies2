@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
@@ -20,6 +21,22 @@ public class FavoriteMovieProvider extends ContentProvider {
     static final int MOVIE_WITH_ID = 101;
     static final int MOVIE_REVIEW_AND_TRAILERS = 102;
     static final int FAVORITE_MOVIE = 103;
+
+    private static final SQLiteQueryBuilder sWeatherByLocationSettingQueryBuilder;
+
+    static{
+        sWeatherByLocationSettingQueryBuilder = new SQLiteQueryBuilder();
+
+        //This is an inner join which looks like
+        //weather INNER JOIN location ON weather.location_id = location._id
+        sWeatherByLocationSettingQueryBuilder.setTables(
+                FavoriteMovieContract.FavoriteMovieEntry.TABLE_NAME + " INNER JOIN " +
+                        FavoriteMovieContract.MovieEntry.TABLE_NAME +
+                        " ON " + FavoriteMovieContract.FavoriteMovieEntry.TABLE_NAME +
+                        "." + FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_KEY +
+                        " = " + FavoriteMovieContract.MovieEntry.TABLE_NAME +
+                        "." + FavoriteMovieContract.MovieEntry._ID);
+    }
 
     @Override
     public boolean onCreate() {
@@ -99,7 +116,17 @@ public class FavoriteMovieProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(Uri uri) {
-        return null;
+        // Use the Uri Matcher to determine what kind of URI this is.
+        final int match = sUriMatcher.match(uri);
+
+        switch (match) {
+            case FAVORITE_MOVIE:
+                return FavoriteMovieContract.FavoriteMovieEntry.CONTENT_TYPE;
+            case MOVIE:
+                return FavoriteMovieContract.MovieEntry.CONTENT_TYPE;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
     }
 
     @Nullable
@@ -183,6 +210,31 @@ public class FavoriteMovieProvider extends ContentProvider {
         return rowsUpdated;
     }
 
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case FAVORITE_MOVIE:
+                db.beginTransaction();
+                int returnCount = 0;
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(FavoriteMovieContract.FavoriteMovieEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            default:
+                return super.bulkInsert(uri, values);
+        }
+    }
 
     static UriMatcher buildUriMatcher() {
 
@@ -191,6 +243,7 @@ public class FavoriteMovieProvider extends ContentProvider {
 
         matcher.addURI(authority, FavoriteMovieContract.PATH_MOVIE, MOVIE);
         matcher.addURI(authority, FavoriteMovieContract.PATH_MOVIE + "/*", MOVIE_WITH_ID);
+        matcher.addURI(authority, FavoriteMovieContract.PATH_FAVORITE_MOVIE, FAVORITE_MOVIE);
 //        matcher.addURI(authority, FavoriteMovieContract.PATH_MOVIE + "/*/#", MOVIE_REVIEW_AND_TRAILERS);
 
         return matcher;

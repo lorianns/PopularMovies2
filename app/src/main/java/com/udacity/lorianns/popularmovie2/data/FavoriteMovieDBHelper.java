@@ -25,11 +25,7 @@ public class FavoriteMovieDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
-        final String SQL_CREATE_FAVORITE_MOVIE_TABLE = "CREATE TABLE " + FavoriteMovieEntry.TABLE_NAME + " (" +
-                FavoriteMovieEntry._ID + " INTEGER PRIMARY KEY," +
-                FavoriteMovieEntry.COLUMN_MOVIE_KEY + " TEXT UNIQUE NOT NULL" +
-                " );";
-        
+
         final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieEntry.TABLE_NAME + " (" +
 
                 MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -39,8 +35,11 @@ public class FavoriteMovieDBHelper extends SQLiteOpenHelper {
                 MovieEntry.COLUMN_IMAGE + " TEXT NOT NULL, " +
                 MovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
                 MovieEntry.COLUMN_RATING + " TEXT NOT NULL," +
+                MovieEntry.COLUMN_SYNOPSIS + " TEXT NOT NULL" + " );";
 
-                MovieEntry.COLUMN_SYNOPSIS + " TEXT NOT NULL, " +
+        final String SQL_CREATE_FAVORITE_MOVIE_TABLE = "CREATE TABLE " + FavoriteMovieEntry.TABLE_NAME + " (" +
+                FavoriteMovieEntry._ID + " INTEGER PRIMARY KEY," +
+                FavoriteMovieEntry.COLUMN_MOVIE_KEY + " TEXT UNIQUE NOT NULL ," +
 
         // Set up the location column as a foreign key to location table.
         " FOREIGN KEY (" + FavoriteMovieEntry.COLUMN_MOVIE_KEY + ") REFERENCES " +

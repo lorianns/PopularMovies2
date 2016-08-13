@@ -1,8 +1,10 @@
 package com.udacity.lorianns.popularmovie2;
 
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -98,20 +100,73 @@ public class MovieDetailFragment extends Fragment implements FetchMovieReviewTas
 
     // insert data into database
     public void insertData(){
-        ContentValues movieValues = new ContentValues();
 
-        movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getId());
-        movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_IMAGE, movie.getImagePath());
-        movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_TITLE, movie.getTitle());
-        movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_SYNOPSIS, movie.getOverview());
-        movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_RATING, movie.getRating());
-        movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
+        long locationId = addMovie(movie);
+
+
+        ContentValues favMovieValues = new ContentValues();
+        favMovieValues.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_KEY, String.valueOf(locationId));
+//        favMovieValues.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_IMAGE, movie.getImagePath());
+
+//        int inserted = 0;
+//        // add to database
+//        if ( cVVector.size() > 0 ) {
+//            ContentValues[] cvArray = new ContentValues[cVVector.size()];
+//            cVVector.toArray(cvArray);
+//            getContext().getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, cvArray);
+//
+//            // delete old data so we don't build up an endless history
+//            getContext().getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
+//                    WeatherContract.WeatherEntry.COLUMN_DATE + " <= ?",
+//                    new String[] {Long.toString(dayTime.setJulianDay(julianStartDay-1))});
+//
+//            notifyWeather();
+//        }
+
 
         // Insert our ContentValues
-        getActivity().getContentResolver().insert(FavoriteMovieContract.MovieEntry.CONTENT_URI,
-                movieValues);
+        getActivity().getContentResolver().insert(FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI,
+                favMovieValues);
+
+        // Insert our ContentValues
+//        getActivity().getContentResolver().insert(FavoriteMovieContract.MovieEntry.CONTENT_URI,
+//                movieValues);
     }
 
+    private long addMovie(MovieEntity movie){
+
+        long locationId;
+
+        // First, check if the location with this city name exists in the db
+//        Cursor locationCursor = getContext().getContentResolver().query(
+//                FavoriteMovieContract.MovieEntry.CONTENT_URI,
+//                new String[]{FavoriteMovieContract.MovieEntry._ID},
+//                FavoriteMovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ?",
+//                new String[]{movie.getId()},
+//                null);
+//
+//        if (locationCursor.moveToFirst()) {
+//            int locationIdIndex = locationCursor.getColumnIndex(FavoriteMovieContract.MovieEntry._ID);
+//            locationId = locationCursor.getLong(locationIdIndex);
+//        } else {
+
+            ContentValues movieValues = new ContentValues();
+            movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getId());
+            movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_IMAGE, movie.getImagePath());
+            movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_TITLE, movie.getTitle());
+            movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_SYNOPSIS, movie.getOverview());
+            movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_RATING, movie.getRating());
+            movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
+
+            Uri insertedUri = getActivity().getContentResolver().insert(FavoriteMovieContract.MovieEntry.CONTENT_URI,
+                    movieValues);
+
+            locationId = ContentUris.parseId(insertedUri);
+//        }
+//        locationCursor.close();
+        // Wait, that worked?  Yes!
+        return locationId;
+    }
     @Override
     public void onMovieReviewPreExecute() {
 //        progressBar.setVisibility(View.VISIBLE);
