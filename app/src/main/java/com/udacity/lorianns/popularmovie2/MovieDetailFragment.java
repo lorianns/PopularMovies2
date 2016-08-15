@@ -7,16 +7,17 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
 import com.udacity.lorianns.popularmovie2.data.FavoriteMovieContract;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.ButterKnife;
 
@@ -30,6 +31,8 @@ public class MovieDetailFragment extends Fragment implements FetchMovieReviewTas
 //    Button btnFavorite;
 
     private MovieEntity movie;
+    private MovieDetailsRecyclerViewAdapter adapter;
+    private RecyclerView recyclerView;
 
     public MovieDetailFragment() {
         // Required empty public constructor
@@ -44,32 +47,25 @@ public class MovieDetailFragment extends Fragment implements FetchMovieReviewTas
 
         ButterKnife.bind(this, rootView);
 
-        TextView title = (TextView) rootView.findViewById(R.id.title);
-        TextView releaseYear = (TextView) rootView.findViewById(R.id.releaseYear);
-        TextView rating = (TextView) rootView.findViewById(R.id.rating);
-        TextView overview = (TextView) rootView.findViewById(R.id.overview);
-        ImageView ivPoster = (ImageView) rootView.findViewById(R.id.imageView);
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(recyclerView.getContext())
+        );
+        RecyclerView.ItemDecoration itemDecoration = new
+                DividerItemDecoration(getResources().getDrawable(R.drawable.list_divider));
+        recyclerView.addItemDecoration(itemDecoration);
+
+        adapter = new MovieDetailsRecyclerViewAdapter(getActivity());
 
         // The detail Activity called via intent.  Inspect the intent for movie data.
         Intent intent = getActivity().getIntent();
         if (intent != null && intent.hasExtra("MOVIE_DATA")) {
             movie = intent.getParcelableExtra("MOVIE_DATA");
-
-            title.setText(movie.getTitle());
-            releaseYear.setText(movie.getReleaseDate());
-            rating.setText(String.format(getString(R.string.rating), movie.getRating()));
-            overview.setText(movie.getOverview());
-
-            Picasso.with(getActivity()).load(movie.getImagePath()).into(ivPoster);
+            adapter.setHeader(movie);
         }
 
-        Button btnFavorite = (Button) rootView.findViewById(R.id.btnFavorite);
-        btnFavorite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                insertData();
-            }
-        });
+        recyclerView.setAdapter(adapter);
+
         return rootView;
 
     }
@@ -176,6 +172,7 @@ public class MovieDetailFragment extends Fragment implements FetchMovieReviewTas
     public void onMovieReviewFetchCompleted(ReviewEntity[] result) {
         Log.e("List", result.toString());
 //        progressBar.setVisibility(View.GONE);
+
     }
 
     @Override
@@ -186,5 +183,6 @@ public class MovieDetailFragment extends Fragment implements FetchMovieReviewTas
     @Override
     public void onMovieVideoFetchCompleted(VideoEntity[] result) {
         Log.e("List", result.toString());
+        adapter.setTrailer(new ArrayList<VideoEntity>(Arrays.asList(result)));
     }
 }
