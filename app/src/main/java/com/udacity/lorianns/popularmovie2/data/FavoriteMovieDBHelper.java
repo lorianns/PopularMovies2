@@ -31,6 +31,7 @@ public class FavoriteMovieDBHelper extends SQLiteOpenHelper {
                 MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
 
                 MovieEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL," +
+//                MovieEntry.COL_MOVIE_API_ID + " TEXT NOT NULL," +
                 MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
                 MovieEntry.COLUMN_IMAGE + " TEXT NOT NULL, " +
                 MovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
@@ -43,14 +44,13 @@ public class FavoriteMovieDBHelper extends SQLiteOpenHelper {
 
         // Set up the location column as a foreign key to location table.
         " FOREIGN KEY (" + FavoriteMovieEntry.COLUMN_MOVIE_KEY + ") REFERENCES " +
-                MovieEntry.TABLE_NAME + " (" + MovieEntry._ID + ") " +
+                MovieEntry.TABLE_NAME + " (" + MovieEntry.COLUMN_MOVIE_ID + ") " +
 
                 ");";
 
 //                // To assure the application have just one weather entry per day
 //                // per location, it's created a UNIQUE constraint with REPLACE strategy
-//                " UNIQUE (" + FavoriteMovieEntry.COLUMN_MOVIE_KEY + ", " +
-//                MovieEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
+//                " UNIQUE (" + FavoriteMovieEntry.COLUMN_MOVIE_KEY + ") ON CONFLICT REPLACE);";
         
         sqLiteDatabase.execSQL(SQL_CREATE_FAVORITE_MOVIE_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);

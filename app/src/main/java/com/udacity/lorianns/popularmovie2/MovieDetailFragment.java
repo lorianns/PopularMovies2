@@ -171,6 +171,7 @@ public class MovieDetailFragment extends Fragment implements FetchMovieReviewTas
     @Override
     public void onMovieReviewFetchCompleted(ReviewEntity[] result) {
         Log.e("List", result.toString());
+        adapter.setReview(new ArrayList<ReviewEntity>(Arrays.asList(result)));
 //        progressBar.setVisibility(View.GONE);
 
     }
