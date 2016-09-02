@@ -208,6 +208,11 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
             @Override
             public void onClick(View v) {
                 insertData(holder.movieEntity);
+
+                // delete old data so we don't build up an endless history
+//                context.getContentResolver().delete(FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI,
+//                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_KEY + " = ?",
+//                        new String[] {movieEntity.getId()});
             }
         });
     }
@@ -273,6 +278,8 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
         // Insert our ContentValues
 //        getActivity().getContentResolver().insert(FavoriteMovieContract.MovieEntry.CONTENT_URI,
 //                movieValues);
+
+
     }
 
     private long addMovie(MovieEntity movie){
@@ -293,7 +300,7 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
 //        } else {
 
         ContentValues movieValues = new ContentValues();
-        movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getId());
+        movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getApiId());
         movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_IMAGE, movie.getImagePath());
         movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_TITLE, movie.getTitle());
         movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_SYNOPSIS, movie.getOverview());

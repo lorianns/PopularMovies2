@@ -11,9 +11,18 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
-    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    <com.udacity.lorianns.popularmovie2.AutofitRecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:columnWidth="@dimen/movie_width">
+
+
+    </com.udacity.lorianns.popularmovie2.AutofitRecyclerView>
+
+    <!--<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--android:id="@+id/recyclerView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
 
 </FrameLayout>

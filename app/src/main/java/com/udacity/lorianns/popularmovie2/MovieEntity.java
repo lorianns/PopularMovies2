@@ -14,7 +14,8 @@ import org.json.JSONObject;
  */
 public class MovieEntity implements Parcelable {
 
-    final String _ID = "id";
+    final String _ID = "_id";
+    final String _API_ID = "id";
     final String _IMAGE = "poster_path";
     final String _TITLE = "original_title";
     final String _RELEASE_DATE = "release_date";
@@ -23,6 +24,7 @@ public class MovieEntity implements Parcelable {
     final String _IMAGE_BASE_URL = "http://image.tmdb.org/t/p/w185/";
 
     private String id;
+    private String apiId;
     private String imagePath;
     private String title;
     private String releaseDate;
@@ -72,7 +74,7 @@ public class MovieEntity implements Parcelable {
 
     public MovieEntity(JSONObject movieJson) throws JSONException {
 
-        id = movieJson.getString(_ID);
+        apiId = movieJson.getString(_API_ID);
         imagePath = _IMAGE_BASE_URL + movieJson.getString(_IMAGE);
         title = movieJson.getString(_TITLE);
         releaseDate = movieJson.getString(_RELEASE_DATE);
@@ -95,7 +97,8 @@ public class MovieEntity implements Parcelable {
     }
 
     public void fromCursor(Cursor cursor) {
-        id = cursor.getString(FavoriteMovieContract.MovieEntry.COL_MOVIE_API_ID);
+        id = cursor.getString(FavoriteMovieContract.MovieEntry.COL_MOVIE_ID);
+        apiId = cursor.getString(FavoriteMovieContract.MovieEntry.COL_MOVIE_API_ID);
         imagePath = cursor.getString(FavoriteMovieContract.MovieEntry.COL_MOVIE_IMAGE);
         title = cursor.getString(FavoriteMovieContract.MovieEntry.COL_MOVIE_TITLE);
         releaseDate = cursor.getString(FavoriteMovieContract.MovieEntry.COL_MOVIE_RELEASE_DATE);
@@ -105,6 +108,7 @@ public class MovieEntity implements Parcelable {
 
     public MovieEntity(Parcel parcel) {
         id = parcel.readString();
+        apiId = parcel.readString();
         imagePath = parcel.readString();
         title = parcel.readString();
         releaseDate = parcel.readString();
@@ -133,6 +137,7 @@ public class MovieEntity implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeString(id);
+        parcel.writeString(apiId);
         parcel.writeString(imagePath);
         parcel.writeString(title);
         parcel.writeString(releaseDate);
@@ -194,6 +199,14 @@ public class MovieEntity implements Parcelable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getApiId() {
+        return apiId;
+    }
+
+    public void setApiId(String apiId) {
+        this.apiId = apiId;
     }
 
     public String getImagePath() {

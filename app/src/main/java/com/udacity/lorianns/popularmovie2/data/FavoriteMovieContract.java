@@ -14,6 +14,8 @@ public class FavoriteMovieContract {
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
+    public static final String PATH_POP_MOVIE= "pop_movie";
+    public static final String PATH_TOP_RATED_MOVIE= "top_rated_movie";
     public static final String PATH_FAVORITE_MOVIE= "fav_movie";
     public static final String PATH_MOVIE= "movie";
 
@@ -39,6 +41,69 @@ public class FavoriteMovieContract {
 
         //insert
         public static Uri buildFavoriteMovieUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+    }
+
+    /* Inner class that defines the table contents of the movie table */
+    public static final class PopMovieEntry implements BaseColumns {
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_POP_MOVIE).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
+
+        public static final String TABLE_NAME = "pop_movie";
+        // Movie id as returned by API, to identify the movie
+        public static final String COLUMN_MOVIE_KEY = "mov_key_id";
+
+        public static final int COL_MOVIE_ID = 0;
+
+        public static Uri buildPopMovieUri() {
+            return CONTENT_URI;
+        }
+
+        //insert
+        public static Uri buildPopMovieUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        //get
+//        public static Uri buildFavoritePopMovieWithMovie(
+//                String movieApiId) {
+//            return CONTENT_URI.buildUpon().appendPath(movieApiId).build();
+//        }
+
+        public static Uri buildFavoritePopMovieWithMovie() {
+            return CONTENT_URI.buildUpon().build();
+        }
+    }
+
+    /* Inner class that defines the table contents of the movie table */
+    public static final class TopRatedMovieEntry implements BaseColumns {
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_TOP_RATED_MOVIE).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
+
+        public static final String TABLE_NAME = "top_rated_movie";
+        // Movie id as returned by API, to identify the movie
+        public static final String COLUMN_MOVIE_KEY = "mov_key_id";
+
+        public static final int COL_MOVIE_ID = 0;
+
+        public static Uri buildTopRatedMovieUri() {
+            return CONTENT_URI;
+        }
+
+        //insert
+        public static Uri buildTopRatedMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
     }
@@ -94,6 +159,10 @@ public class FavoriteMovieContract {
         //insert
         public static Uri buildMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static String getMovieFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
         }
     }
 }

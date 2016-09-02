@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.udacity.lorianns.popularmovie2.data.FavoriteMovieContract;
@@ -31,16 +31,23 @@ import java.util.Arrays;
  */
 public class MovieListFragment extends Fragment implements FetchMovieTask.FetchMovieCallback, LoaderManager.LoaderCallbacks<Cursor> {
 
-    private ArrayList<MovieEntity> movieArray;
+    private ArrayList<MovieEntity> movieArray = new ArrayList<>();
+    private Cursor movieCursorArray;
     private String selectedSort;
     private ProgressBar progressBar;
     private RecyclerView rv;
-    private SimpleImageRecyclerViewAdapter imageOldAdapter;
+//        private SimpleImageRecyclerViewAdapter imageOldAdapter;
     private SimpleImageCursorAdapter imageAdapter;
+    public int mPosition = ListView.INVALID_POSITION;
     View rootView;
     private Uri mUri;
-//    private static final int DETAIL_LOADER = 0;
-    private static final int FAVORITE_MOVIE_LOADER = 0;
+    //    private static final int DETAIL_LOADER = 0;
+
+    private static final int POP_MOVIE_LOADER = 0;
+    private static final int TOP_RATED_MOVIE_LOADER = 1;
+    private static final int FAVORITE_MOVIE_LOADER = 2;
+
+    private static final String SELECTED_KEY = "selected_position";
 
     private static final String[] FAVORITES_MOVIE_COLUMNS = {
             // In this case the id needs to be fully qualified with a table name, since
@@ -58,6 +65,17 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
             FavoriteMovieContract.MovieEntry.COLUMN_MOVIE_ID,
     };
 
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(MovieEntity movieEntity, int position);
+    }
 
     public MovieListFragment() {
         // Required empty public constructor
@@ -66,8 +84,10 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         setHasOptionsMenu(true);
         selectedSort = getString(R.string.pref_sort_by_default);
+        imageAdapter = new SimpleImageCursorAdapter(getActivity(), null);
     }
 
     @Override
@@ -76,22 +96,28 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_movie_list, container, false);
 
-        if (savedInstanceState == null || !savedInstanceState.containsKey("MOVIE_ARRAY")) {
-            movieArray = new ArrayList<>();
-        } else {
-            movieArray = savedInstanceState.getParcelableArrayList("MOVIE_ARRAY");
-            selectedSort = savedInstanceState.getString("SORT_BY");
-        }
-
         // Get a reference to the ProgressBar
         progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
 
-        rv = (RecyclerView) rootView.findViewById(R.id.recyclerView);
-        rv.setLayoutManager(
-                new LinearLayoutManager(rv.getContext())
-        );
-
         setupRecyclerView(rv);
+
+//        if (savedInstanceState == null || !savedInstanceState.containsKey("MOVIE_ARRAY")) {
+//            movieArray = new ArrayList<>();
+//        } else
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
+            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+            movieArray = savedInstanceState.getParcelableArrayList("MOVIE_ARRAY");
+//            imageAdapter.swapCursor(movieArray);
+//            selectedSort = savedInstanceState.getString("SORT_BY");
+        }
+//        else{
+//            rv = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+//            rv.setLayoutManager(
+//                    new LinearLayoutManager(rv.getContext())
+//            );
+//            rv.setAdapter(imageAdapter);
+//        }
 
         return rootView;
     }
@@ -101,14 +127,33 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
 //        imageAdapter = new SimpleImageRecyclerViewAdapter(getActivity(),
 //                movieArray);
 //        recyclerView.setAdapter(imageAdapter);
-        imageAdapter = new SimpleImageCursorAdapter(getActivity(), null);
+
+        rv = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        rv.setHasFixedSize(true);
+
+//        GridLayoutManager manager = new GridLayoutManager(getContext(), 3);
+//        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+//            @Override
+//            public int getSpanSize(int position) {
+//                return (3 - position % 3);
+//            }
+//        });
+
+//        rv.setLayoutManager(manager);
+
+//        rv.setLayoutManager(
+//                new GridLayoutManager(rv.getContext(), 1)
+//        );
+
+//        imageAdapter = new SimpleImageCursorAdapter(getActivity(), null);
         rv.setAdapter(imageAdapter);
+
     }
 
     @Override
     public void onStart() {
         super.onStart();
-//        fetchMovieData(selectedSort);
+        fetchMovieData(selectedSort);
     }
 
     @Override
@@ -127,22 +172,27 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
         switch (id) {
             case R.id.action_most_popular:
                 //old
-                imageOldAdapter = new SimpleImageRecyclerViewAdapter(getActivity(), movieArray);
-                rv.setAdapter(imageOldAdapter);
+//                imageOldAdapter = new SimpleImageRecyclerViewAdapter(getActivity(), movieArray);
+//                rv.setAdapter(imageOldAdapter);
+                selectedSort = getString(R.string.pref_sort_by_default);
                 fetchMovieData(getString(R.string.pref_sort_by_default));
+//                getLoaderManager().restartLoader(POP_MOVIE_LOADER, null, this);
                 return true;
             case R.id.action_top_rated:
                 //old
-                imageOldAdapter = new SimpleImageRecyclerViewAdapter(getActivity(), movieArray);
-                rv.setAdapter(imageOldAdapter);
+//                imageOldAdapter = new SimpleImageRecyclerViewAdapter(getActivity(), movieArray);
+//                rv.setAdapter(imageOldAdapter);
+                selectedSort = getString(R.string.pref_sort_by_top_rated);
                 fetchMovieData(getString(R.string.pref_sort_by_top_rated));
+//                getLoaderManager().restartLoader(TOP_RATED_MOVIE_LOADER, null, this);
                 return true;
             case R.id.action_favorites:
                 Uri uri = mUri;
 //                if (null != uri) {
 //                    Uri updatedUri = FavoriteMovieContract.MovieEntry.buildMovieUri();
 //                    mUri = updatedUri;
-                    getLoaderManager().initLoader(FAVORITE_MOVIE_LOADER, null, this);
+                selectedSort = getString(R.string.pref_sort_by_favorite);
+//                getLoaderManager().restartLoader(TOP_RATED_MOVIE_LOADER, null, this);
 //                }
 
                 return true;
@@ -154,13 +204,21 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
+        // When tablets rotate, the currently selected list item needs to be saved.
+        // When no item is selected, mPosition will be set to Listview.INVALID_POSITION,
+        // so check for that before storing.
+        if (mPosition != ListView.INVALID_POSITION) {
+            outState.putInt(SELECTED_KEY, mPosition);
+        }
+
         outState.putParcelableArrayList("MOVIE_ARRAY", movieArray);
         outState.putString("SORT_BY", selectedSort);
     }
 
     private void fetchMovieData(String sortBy) {
         selectedSort = sortBy;
-        FetchMovieTask movieTask = new FetchMovieTask();
+        FetchMovieTask movieTask = new FetchMovieTask(getActivity());
         movieTask.setListener(this);
         movieTask.execute(sortBy);
     }
@@ -177,7 +235,9 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
 //            imageAdapter.clear();
             //Update the Gridview adapter with the fetch movies results
             movieArray.addAll(new ArrayList<MovieEntity>(Arrays.asList(result)));
-            imageOldAdapter.notifyDataSetChanged();
+//            imageOldAdapter.notifyDataSetChanged();
+
+            getLoaderManager().initLoader(POP_MOVIE_LOADER, null, this);
         }
         progressBar.setVisibility(View.GONE);
 
@@ -185,7 +245,7 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
 
 //    @Override
 //    public void onActivityCreated(Bundle savedInstanceState) {
-//        getLoaderManager().initLoader(FAVORITE_MOVIE_LOADER, null, this);
+//        getLoaderManager().initLoader(TOP_RATED_MOVIE_LOADER, null, this);
 //        super.onActivityCreated(savedInstanceState);
 //    }
 
@@ -198,13 +258,31 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
         // dates after or including today.
 
         // Sort order:  Ascending, by date.
-        String sortOrder = FavoriteMovieContract.MovieEntry.TABLE_NAME + " ASC";
+//        String sortOrder = FavoriteMovieContract.MovieEntry.TABLE_NAME + " ASC";
+        Uri weatherForLocationUri = null;
+        String[] columns = null;
+        switch (id){
 
-        Uri weatherForLocationUri = FavoriteMovieContract.MovieEntry.buildMovieUri();
+            case POP_MOVIE_LOADER:
+                weatherForLocationUri = FavoriteMovieContract.PopMovieEntry.buildFavoritePopMovieWithMovie();
+//                weatherForLocationUri = FavoriteMovieContract.MovieEntry.buildMovieUri();
+                columns = FAVORITES_MOVIE_COLUMNS;
+                break;
+
+            case TOP_RATED_MOVIE_LOADER:
+                weatherForLocationUri = FavoriteMovieContract.TopRatedMovieEntry.buildTopRatedMovieUri();
+                columns = FAVORITES_MOVIE_COLUMNS;
+                break;
+
+            case FAVORITE_MOVIE_LOADER:
+                weatherForLocationUri = FavoriteMovieContract.FavoriteMovieEntry.buildFavoriteMovieUri();
+                columns = FAVORITES_MOVIE_COLUMNS;
+                break;
+        }
 
         return new CursorLoader(getActivity(),
                 weatherForLocationUri,
-                FAVORITES_MOVIE_COLUMNS,
+                columns,
                 null,
                 null,
                 null);
@@ -214,12 +292,14 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.d("LOADER", "finished");
 //        Log.d("LOADER", data.getString(0));
+        movieCursorArray = data;
         imageAdapter.swapCursor(data);
-//        if (mPosition != ListView.INVALID_POSITION) {
+        if (mPosition != ListView.INVALID_POSITION) {
 //             If we don't need to restart the loader, and there's a desired position to restore
 //             to, do so now.
-//            mListView.smoothScrollToPosition(mPosition);
-//        }
+//            imageAdapter.smoothScrollToPosition(mPosition);
+            rv.scrollToPosition(mPosition);
+        }
     }
 
     @Override

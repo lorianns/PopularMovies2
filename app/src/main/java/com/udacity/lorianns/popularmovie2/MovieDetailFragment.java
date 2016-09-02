@@ -63,6 +63,10 @@ public class MovieDetailFragment extends Fragment implements FetchMovieReviewTas
             movie = intent.getParcelableExtra("MOVIE_DATA");
             adapter.setHeader(movie);
         }
+        else if(getArguments() != null && getArguments().containsKey("MOVIE_DATA")){
+            movie = getArguments().getParcelable("MOVIE_DATA");
+            adapter.setHeader(movie);
+        }
 
         recyclerView.setAdapter(adapter);
 
@@ -73,8 +77,10 @@ public class MovieDetailFragment extends Fragment implements FetchMovieReviewTas
     @Override
     public void onStart() {
         super.onStart();
-        fetchMovieReviewData(movie.getId());
-        fetchMovieVideoData(movie.getId());
+        if(movie != null) {
+            fetchMovieReviewData(movie.getApiId());
+            fetchMovieVideoData(movie.getApiId());
+        }
     }
 
     private void fetchMovieReviewData(String id) {
@@ -147,7 +153,7 @@ public class MovieDetailFragment extends Fragment implements FetchMovieReviewTas
 //        } else {
 
             ContentValues movieValues = new ContentValues();
-            movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getId());
+            movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getApiId());
             movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_IMAGE, movie.getImagePath());
             movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_TITLE, movie.getTitle());
             movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_SYNOPSIS, movie.getOverview());
@@ -170,8 +176,10 @@ public class MovieDetailFragment extends Fragment implements FetchMovieReviewTas
 
     @Override
     public void onMovieReviewFetchCompleted(ReviewEntity[] result) {
-        Log.e("List", result.toString());
-        adapter.setReview(new ArrayList<ReviewEntity>(Arrays.asList(result)));
+        if (result != null) {
+            Log.e("List", result.toString());
+            adapter.setReview(new ArrayList<ReviewEntity>(Arrays.asList(result)));
+        }
 //        progressBar.setVisibility(View.GONE);
 
     }

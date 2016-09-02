@@ -1,7 +1,6 @@
 package com.udacity.lorianns.popularmovie2;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -46,7 +45,7 @@ public class SimpleImageCursorAdapter extends CursorRecyclerViewAdapter<SimpleIm
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
+    public void onBindViewHolder(ViewHolder viewHolder, final Cursor cursor) {
 
         final MovieEntity movieEntity = new MovieEntity();
         movieEntity.fromCursor(cursor);
@@ -54,17 +53,21 @@ public class SimpleImageCursorAdapter extends CursorRecyclerViewAdapter<SimpleIm
             @Override
             public void onClick(View v) {
                 Context context = v.getContext();
-                Intent intent = new Intent(context, MovieDetailActivity.class);
-                intent.putExtra("MOVIE_DATA", movieEntity);
-                context.startActivity(intent);
+//                Intent intent = new Intent(context, MovieDetailActivity.class);
+//                intent.putExtra("MOVIE_DATA", movieEntity);
+//                context.startActivity(intent);
+
+                ((MovieListFragment.Callback) context)
+                        .onItemSelected(movieEntity, cursor.getPosition());
             }
         });
 
         Picasso.with(mContext)
                 .load(cursor.getString(FavoriteMovieContract.MovieEntry.COL_MOVIE_IMAGE))
                 .into( viewHolder.mImageView);
-
     }
+
+
 //
 //    @Override
 //    public int getItemCount() {

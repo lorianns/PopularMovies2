@@ -20,6 +20,7 @@
     <!-- Key name for storing location in SharedPreferences [CHAR LIMIT=NONE] -->
     <string name="pref_sort_by_default" translatable="false">popular</string>
     <string name="pref_sort_by_top_rated" translatable="false">top_rated</string>
+    <string name="pref_sort_by_favorite" translatable="false">favorites</string>
 
     <string name="title_activity_detail">Details</string>
 

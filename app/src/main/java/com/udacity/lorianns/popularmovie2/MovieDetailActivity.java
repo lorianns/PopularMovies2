@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 
 public class MovieDetailActivity extends AppCompatActivity {
 
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -12,7 +14,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new MovieDetailFragment())
+                    .add(R.id.container, new MovieDetailFragment(), DETAILFRAGMENT_TAG)
                     .commit();
         }
 
