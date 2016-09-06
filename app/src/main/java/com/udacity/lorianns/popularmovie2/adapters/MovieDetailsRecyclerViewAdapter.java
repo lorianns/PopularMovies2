@@ -201,7 +201,7 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
                 Uri uri = MovieContract.FavoriteMovieEntry.buildFavoriteMovieUri(movieEntity.getApiId());
                 Cursor cursor = context.getContentResolver().query(uri,
                         new String[] {MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry._ID},
-                        MovieContract.FavoriteMovieEntry.COLUMN_MOVIE_KEY, new String[] {"1"}, null);
+                        MovieContract.FavoriteMovieEntry.COLUMN_MOVIE_KEY, new String[] {movieEntity.getApiId()}, null);
 
                 if(cursor.getCount() == 0)
                     insertData(holder.movieEntity);

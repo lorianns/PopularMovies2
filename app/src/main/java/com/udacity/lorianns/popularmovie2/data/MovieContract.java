@@ -48,7 +48,8 @@ public class MovieContract {
         public static Uri buildFavoriteMovieUri(String id) {
 
             return CONTENT_URI.buildUpon()
-                    .appendQueryParameter(COLUMN_MOVIE_KEY, id).build();
+                    .appendQueryParameter(COLUMN_MOVIE_KEY, id)
+                    .build();
         }
 
     }

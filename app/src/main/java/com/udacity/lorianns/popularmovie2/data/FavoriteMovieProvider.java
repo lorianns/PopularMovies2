@@ -66,6 +66,8 @@ public class FavoriteMovieProvider extends ContentProvider {
                         "." + MovieContract.MovieEntry._ID);
     }
 
+
+
     @Override
     public boolean onCreate() {
         mOpenHelper = new FavoriteMovieDBHelper(getContext());
