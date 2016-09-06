@@ -107,10 +107,11 @@ public class FavoriteMovieProvider extends ContentProvider {
                 break;
             }
             case FAVORITE_MOVIE: {
-                retCursor = sMoviesbyFavoriteQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                retCursor = sMoviesbyFavoriteQueryBuilder.query(
+                        mOpenHelper.getReadableDatabase(),
                         projection,
-                        null,
-                        null,
+                        selection,
+                        selectionArgs,
                         null,
                         null,
                         sortOrder
@@ -212,7 +213,7 @@ public class FavoriteMovieProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-//        getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(uri, null);
         return returnUri;
     }
 

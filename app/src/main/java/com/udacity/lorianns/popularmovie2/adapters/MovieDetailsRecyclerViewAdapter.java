@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -194,17 +196,38 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
 
         Picasso.with(context).load(holder.movieEntity.getImagePath()).into(holder.ivPoster);
 
+
+        //Exist?
+        Uri uri = MovieContract.FavoriteMovieEntry.buildFavoriteMovieUri(movieEntity.getId());
+        Cursor cursor = context.getContentResolver().query(uri,
+                new String[] {MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry._ID},
+                MovieContract.FavoriteMovieEntry.COLUMN_MOVIE_KEY + "= ?", new String[] {movieEntity.getId()}, null);
+
+        if(cursor != null && cursor.getCount() == 0)
+            holder.btnFavorite.setImageResource(R.drawable.ic_star_border_black_50dp);
+        else
+            holder.btnFavorite.setImageResource(R.drawable.ic_star_black_50dp);
+
+
         holder.btnFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Uri uri = MovieContract.FavoriteMovieEntry.buildFavoriteMovieUri(movieEntity.getApiId());
+                Uri uri = MovieContract.FavoriteMovieEntry.buildFavoriteMovieUri(movieEntity.getId());
                 Cursor cursor = context.getContentResolver().query(uri,
                         new String[] {MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry._ID},
-                        MovieContract.FavoriteMovieEntry.COLUMN_MOVIE_KEY, new String[] {movieEntity.getApiId()}, null);
+                        MovieContract.FavoriteMovieEntry.COLUMN_MOVIE_KEY + "= ?", new String[] {movieEntity.getId()}, null);
 
-                if(cursor.getCount() == 0)
+                if(cursor != null && cursor.getCount() == 0){
                     insertData(holder.movieEntity);
+                    holder.btnFavorite.setImageResource(R.drawable.ic_star_black_50dp);
+                }
+                else {
+                    int cursorDelete = context.getContentResolver().delete(uri, MovieContract.FavoriteMovieEntry.COLUMN_MOVIE_KEY + "= ?", new String[] {movieEntity.getId()});
+                    if(cursorDelete > 0)
+                        holder.btnFavorite.setImageResource(R.drawable.ic_star_border_black_50dp);
+                }
+
             }
         });
     }

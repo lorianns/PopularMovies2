@@ -51,7 +51,6 @@ public class MovieContract {
                     .appendQueryParameter(COLUMN_MOVIE_KEY, id)
                     .build();
         }
-
     }
 
     /* Inner class that defines the table contents of the movie table */
