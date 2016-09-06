@@ -1,4 +1,4 @@
-package com.udacity.lorianns.popularmovie2;
+package com.udacity.lorianns.popularmovie2.custom_recycler_view;
 
 import android.content.Context;
 import android.content.res.TypedArray;

@@ -1,8 +1,11 @@
-package com.udacity.lorianns.popularmovie2;
+package com.udacity.lorianns.popularmovie2.async_tasks;
 
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.udacity.lorianns.popularmovie2.BuildConfig;
+import com.udacity.lorianns.popularmovie2.entities.VideoEntity;
 
 import org.json.JSONArray;
 import org.json.JSONException;

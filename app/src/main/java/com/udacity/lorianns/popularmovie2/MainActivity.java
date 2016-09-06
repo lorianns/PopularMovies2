@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.udacity.lorianns.popularmovie2.entities.MovieEntity;
+
 public class MainActivity extends AppCompatActivity implements MovieListFragment.Callback{
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -17,13 +19,8 @@ public class MainActivity extends AppCompatActivity implements MovieListFragment
         setContentView(R.layout.activity_main);
 
         if (findViewById(R.id.movie_detail_container) != null) {
-            // The detail container view will be present only in the large-screen layouts
-            // (res/layout-sw600dp). If this view is present, then the activity should be
-            // in two-pane mode.
             mTwoPane = true;
-            // In two-pane mode, show the detail view in this activity by
-            // adding or replacing the detail fragment using a
-            // fragment transaction.
+
             if (savedInstanceState == null) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.movie_detail_container, new MovieDetailFragment(), DETAILFRAGMENT_TAG)
@@ -32,16 +29,6 @@ public class MainActivity extends AppCompatActivity implements MovieListFragment
         } else {
             mTwoPane = false;
             getSupportActionBar().setElevation(0f);
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        MovieDetailFragment df = (MovieDetailFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
-        if ( null != df ) {
-//            df.onLocationChanged(location);
         }
     }
 

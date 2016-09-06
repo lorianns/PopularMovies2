@@ -8,7 +8,7 @@ import android.provider.BaseColumns;
 /**
  * Created by lorianns on 7/7/16.
  */
-public class FavoriteMovieContract {
+public class MovieContract {
 
     public static final String CONTENT_AUTHORITY = "com.udacity.lorianns.popularmovie2";
 
@@ -44,6 +44,13 @@ public class FavoriteMovieContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
+        //exist?
+        public static Uri buildFavoriteMovieUri(String id) {
+
+            return CONTENT_URI.buildUpon()
+                    .appendQueryParameter(COLUMN_MOVIE_KEY, id).build();
+        }
+
     }
 
     /* Inner class that defines the table contents of the movie table */
@@ -70,12 +77,6 @@ public class FavoriteMovieContract {
         public static Uri buildPopMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
-
-        //get
-//        public static Uri buildFavoritePopMovieWithMovie(
-//                String movieApiId) {
-//            return CONTENT_URI.buildUpon().appendPath(movieApiId).build();
-//        }
 
         public static Uri buildFavoritePopMovieWithMovie() {
             return CONTENT_URI.buildUpon().build();
@@ -140,9 +141,6 @@ public class FavoriteMovieContract {
         //Release date of the movie, as provided by API.
         //Ex: 2016-03-23
         public static final String COLUMN_RELEASE_DATE= "release_date";
-
-//        public static final String COLUMN_HIGH_RATED= "high_rated";
-//        public static final String COLUMN_MOST_POPULAR = "most_popular";
 
         public static final int COL_MOVIE_ID = 0;
         public static final int COL_MOVIE_SYNOPSIS = 1;

@@ -1,4 +1,4 @@
-package com.udacity.lorianns.popularmovie2;
+package com.udacity.lorianns.popularmovie2.adapters;
 
 import android.content.Context;
 import android.database.Cursor;

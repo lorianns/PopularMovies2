@@ -1,21 +1,25 @@
-package com.udacity.lorianns.popularmovie2;
+package com.udacity.lorianns.popularmovie2.adapters;
 
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.udacity.lorianns.popularmovie2.data.FavoriteMovieContract;
+import com.udacity.lorianns.popularmovie2.R;
+import com.udacity.lorianns.popularmovie2.data.MovieContract;
+import com.udacity.lorianns.popularmovie2.entities.MovieEntity;
+import com.udacity.lorianns.popularmovie2.entities.ReviewEntity;
+import com.udacity.lorianns.popularmovie2.entities.VideoEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +49,7 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
         TextView content, author;
         ImageView ivPoster;
 
-        Button btnFavorite;
+        FloatingActionButton btnFavorite;
 
         public ViewHolder(View view, int viewType) {
             super(view);
@@ -59,7 +63,7 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
                     rating = (TextView) view.findViewById(R.id.rating);
                     overview = (TextView) view.findViewById(R.id.overview);
                     ivPoster = (ImageView) view.findViewById(R.id.imageView);
-                    btnFavorite = (Button) view.findViewById(R.id.btnFavorite);
+                    btnFavorite = (FloatingActionButton) view.findViewById(R.id.btnFavorite);
 
                     break;
 
@@ -88,13 +92,11 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
 
     public void setTrailer(List<VideoEntity> items) {
         mTrailerValues = items;
-//        mDataSet = list;
         notifyDataSetChanged();
     }
 
     public void setReview(ArrayList<ReviewEntity> list) {
         mReviewValues =list;
-//        mDataSet = list;
         notifyDataSetChanged();
     }
 
@@ -124,7 +126,6 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
                 view.setBackgroundResource(mBackground);
                 holder = new ViewHolder(view, TYPE_REVIEW);
                 break;
-
         }
         return holder;
     }
@@ -183,17 +184,6 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
         }
         else
             return TYPE_HEADER;
-
-//            switch (position) {
-//            switch (mDataSet.get(position - 1)) {
-//                case TYPE_TRAILER:
-//                    return TYPE_TRAILER;
-//                case TYPE_REVIEW:
-//                    return TYPE_REVIEW;
-//                default:
-//                    return TYPE_HEADER;
-//            }
-//        }
     }
 
     private void setHeaderData(final ViewHolder holder) {
@@ -207,12 +197,14 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
         holder.btnFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                insertData(holder.movieEntity);
 
-                // delete old data so we don't build up an endless history
-//                context.getContentResolver().delete(FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI,
-//                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_KEY + " = ?",
-//                        new String[] {movieEntity.getId()});
+                Uri uri = MovieContract.FavoriteMovieEntry.buildFavoriteMovieUri(movieEntity.getApiId());
+                Cursor cursor = context.getContentResolver().query(uri,
+                        new String[] {MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry._ID},
+                        MovieContract.FavoriteMovieEntry.COLUMN_MOVIE_KEY, new String[] {"1"}, null);
+
+                if(cursor.getCount() == 0)
+                    insertData(holder.movieEntity);
             }
         });
     }
@@ -247,73 +239,11 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
 
     // insert data into database
     public void insertData(MovieEntity movieEntity){
-
-        long locationId = addMovie(movieEntity);
-
-
         ContentValues favMovieValues = new ContentValues();
-        favMovieValues.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_MOVIE_KEY, String.valueOf(locationId));
-//        favMovieValues.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_IMAGE, movie.getImagePath());
-
-//        int inserted = 0;
-//        // add to database
-//        if ( cVVector.size() > 0 ) {
-//            ContentValues[] cvArray = new ContentValues[cVVector.size()];
-//            cVVector.toArray(cvArray);
-//            getContext().getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, cvArray);
-//
-//            // delete old data so we don't build up an endless history
-//            getContext().getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
-//                    WeatherContract.WeatherEntry.COLUMN_DATE + " <= ?",
-//                    new String[] {Long.toString(dayTime.setJulianDay(julianStartDay-1))});
-//
-//            notifyWeather();
-//        }
-
+        favMovieValues.put(MovieContract.FavoriteMovieEntry.COLUMN_MOVIE_KEY, movieEntity.getId());
 
         // Insert our ContentValues
-        context.getContentResolver().insert(FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI,
+        context.getContentResolver().insert(MovieContract.FavoriteMovieEntry.CONTENT_URI,
                 favMovieValues);
-
-        // Insert our ContentValues
-//        getActivity().getContentResolver().insert(FavoriteMovieContract.MovieEntry.CONTENT_URI,
-//                movieValues);
-
-
-    }
-
-    private long addMovie(MovieEntity movie){
-
-        long locationId;
-
-        // First, check if the location with this city name exists in the db
-//        Cursor locationCursor = getContext().getContentResolver().query(
-//                FavoriteMovieContract.MovieEntry.CONTENT_URI,
-//                new String[]{FavoriteMovieContract.MovieEntry._ID},
-//                FavoriteMovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ?",
-//                new String[]{movie.getId()},
-//                null);
-//
-//        if (locationCursor.moveToFirst()) {
-//            int locationIdIndex = locationCursor.getColumnIndex(FavoriteMovieContract.MovieEntry._ID);
-//            locationId = locationCursor.getLong(locationIdIndex);
-//        } else {
-
-        ContentValues movieValues = new ContentValues();
-        movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getApiId());
-        movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_IMAGE, movie.getImagePath());
-        movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_TITLE, movie.getTitle());
-        movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_SYNOPSIS, movie.getOverview());
-        movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_RATING, movie.getRating());
-        movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
-
-        Uri insertedUri = context.getContentResolver().insert(FavoriteMovieContract.MovieEntry.CONTENT_URI,
-                movieValues);
-
-        locationId = ContentUris.parseId(insertedUri);
-//        }
-//        locationCursor.close();
-        // Wait, that worked?  Yes!
-        return locationId;
     }
 }

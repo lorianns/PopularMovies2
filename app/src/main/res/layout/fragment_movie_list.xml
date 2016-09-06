@@ -11,14 +11,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
-    <com.udacity.lorianns.popularmovie2.AutofitRecyclerView
+    <com.udacity.lorianns.popularmovie2.custom_recycler_view.AutofitRecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:columnWidth="@dimen/movie_width">
 
 
-    </com.udacity.lorianns.popularmovie2.AutofitRecyclerView>
+    </com.udacity.lorianns.popularmovie2.custom_recycler_view.AutofitRecyclerView>
 
     <!--<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"-->
         <!--android:id="@+id/recyclerView"-->

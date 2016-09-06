@@ -1,4 +1,4 @@
-package com.udacity.lorianns.popularmovie2;
+package com.udacity.lorianns.popularmovie2.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,30 +9,35 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.udacity.lorianns.popularmovie2.data.FavoriteMovieContract;
+import com.udacity.lorianns.popularmovie2.MovieListFragment;
+import com.udacity.lorianns.popularmovie2.R;
+import com.udacity.lorianns.popularmovie2.data.MovieContract;
+import com.udacity.lorianns.popularmovie2.entities.MovieEntity;
 
 /**
  * Created by lorianns on 7/31/16.
  */
-public class SimpleImageCursorAdapter extends CursorRecyclerViewAdapter<SimpleImageCursorAdapter.ViewHolder>{
+public class SimpleImageCursorAdapter extends CursorRecyclerViewAdapter<SimpleImageCursorAdapter.ViewHolder> {
 
     private Context mContext;
-    private Cursor mCursor;
 
     public SimpleImageCursorAdapter(Context context, Cursor cursor){
         super(context,cursor);
         mContext = context;
-        mCursor = cursor;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView mImageView;
+        public View mborderLineTop;
+        public View mborderLineBottom;
         public final View mView;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
             mImageView = (ImageView) view.findViewById(R.id.imageView);
+            mborderLineTop = view.findViewById(R.id.borderLineTop);
+            mborderLineBottom = view.findViewById(R.id.borderLineBottom);
         }
     }
 
@@ -45,7 +50,7 @@ public class SimpleImageCursorAdapter extends CursorRecyclerViewAdapter<SimpleIm
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, final Cursor cursor) {
+    public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor) {
 
         final MovieEntity movieEntity = new MovieEntity();
         movieEntity.fromCursor(cursor);
@@ -53,9 +58,10 @@ public class SimpleImageCursorAdapter extends CursorRecyclerViewAdapter<SimpleIm
             @Override
             public void onClick(View v) {
                 Context context = v.getContext();
-//                Intent intent = new Intent(context, MovieDetailActivity.class);
-//                intent.putExtra("MOVIE_DATA", movieEntity);
-//                context.startActivity(intent);
+
+                movieEntity.setSelected(true);
+                viewHolder.mborderLineTop.setVisibility(View.VISIBLE);
+                viewHolder.mborderLineBottom.setVisibility(View.VISIBLE);
 
                 ((MovieListFragment.Callback) context)
                         .onItemSelected(movieEntity, cursor.getPosition());
@@ -63,18 +69,16 @@ public class SimpleImageCursorAdapter extends CursorRecyclerViewAdapter<SimpleIm
         });
 
         Picasso.with(mContext)
-                .load(cursor.getString(FavoriteMovieContract.MovieEntry.COL_MOVIE_IMAGE))
+                .load(cursor.getString(MovieContract.MovieEntry.COL_MOVIE_IMAGE))
                 .into( viewHolder.mImageView);
+
+        if(movieEntity.isSelected()){
+            viewHolder.mborderLineTop.setVisibility(View.VISIBLE);
+            viewHolder.mborderLineBottom.setVisibility(View.VISIBLE);
+        }
+        else {
+            viewHolder.mborderLineTop.setVisibility(View.GONE);
+            viewHolder.mborderLineBottom.setVisibility(View.GONE);
+        }
     }
-
-
-//
-//    @Override
-//    public int getItemCount() {
-//        if (mCursor != null) {
-//            return mCursor.getCount();
-//        }
-//        return 0;
-//    }
-
 }

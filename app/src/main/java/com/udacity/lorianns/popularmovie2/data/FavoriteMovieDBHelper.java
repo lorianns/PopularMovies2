@@ -4,10 +4,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.udacity.lorianns.popularmovie2.data.FavoriteMovieContract.PopMovieEntry;
-import com.udacity.lorianns.popularmovie2.data.FavoriteMovieContract.TopRatedMovieEntry;
-import com.udacity.lorianns.popularmovie2.data.FavoriteMovieContract.FavoriteMovieEntry;
-import com.udacity.lorianns.popularmovie2.data.FavoriteMovieContract.MovieEntry;
+import com.udacity.lorianns.popularmovie2.data.MovieContract.PopMovieEntry;
+import com.udacity.lorianns.popularmovie2.data.MovieContract.TopRatedMovieEntry;
+import com.udacity.lorianns.popularmovie2.data.MovieContract.FavoriteMovieEntry;
+import com.udacity.lorianns.popularmovie2.data.MovieContract.MovieEntry;
 
 /**
  * Created by lorianns on 7/10/16.
@@ -43,7 +43,6 @@ public class FavoriteMovieDBHelper extends SQLiteOpenHelper {
                 MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
 
                 MovieEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL," +
-//                MovieEntry.COL_MOVIE_API_ID + " TEXT NOT NULL," +
                 MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
                 MovieEntry.COLUMN_IMAGE + " TEXT NOT NULL, " +
                 MovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
@@ -52,30 +51,23 @@ public class FavoriteMovieDBHelper extends SQLiteOpenHelper {
                 "UNIQUE (" + MovieEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE" +
                 " );";
 
-
-
         final String SQL_CREATE_FAVORITE_MOVIE_TABLE = "CREATE TABLE " + FavoriteMovieEntry.TABLE_NAME + " (" +
                 FavoriteMovieEntry._ID + " INTEGER PRIMARY KEY," +
                 FavoriteMovieEntry.COLUMN_MOVIE_KEY + " TEXT UNIQUE NOT NULL ," +
 
-        // Set up the location column as a foreign key to location table.
-        " FOREIGN KEY (" + FavoriteMovieEntry.COLUMN_MOVIE_KEY + ") REFERENCES " +
+                // Set up the movie_key column as a foreign key to movie table.
+                " FOREIGN KEY (" + FavoriteMovieEntry.COLUMN_MOVIE_KEY + ") REFERENCES " +
                 MovieEntry.TABLE_NAME + " (" + MovieEntry._ID + ")  ON DELETE CASCADE" +
-//                "UNIQUE (" + FavoriteMovieEntry.COLUMN_MOVIE_KEY + ") ON CONFLICT REPLACE" +
                 ");";
-
-
 
         final String SQL_CREATE_POP_MOVIE_TABLE = "CREATE TABLE " + PopMovieEntry.TABLE_NAME + " (" +
                 PopMovieEntry._ID + " INTEGER PRIMARY KEY," +
                 PopMovieEntry.COLUMN_MOVIE_KEY + " TEXT UNIQUE NOT NULL ," +
 
-                // Set up the location column as a foreign key to location table.
+                // Set up the movie_key column as a foreign key to movie table.
                 " FOREIGN KEY (" + PopMovieEntry.COLUMN_MOVIE_KEY + ") REFERENCES " +
                 MovieEntry.TABLE_NAME + " (" + MovieEntry._ID + ")  ON DELETE CASCADE" +
                 ");";
-
-
 
         final String SQL_CREATE_TOP_RATED_MOVIE_TABLE = "CREATE TABLE " + TopRatedMovieEntry.TABLE_NAME + " (" +
                 TopRatedMovieEntry._ID + " INTEGER PRIMARY KEY," +
@@ -85,12 +77,6 @@ public class FavoriteMovieDBHelper extends SQLiteOpenHelper {
                 " FOREIGN KEY (" + TopRatedMovieEntry.COLUMN_MOVIE_KEY + ") REFERENCES " +
                 MovieEntry.TABLE_NAME + " (" + MovieEntry._ID + ")  ON DELETE CASCADE" +
                 ");";
-
-
-
-//                // To assure the application have just one weather entry per day
-//                // per location, it's created a UNIQUE constraint with REPLACE strategy
-//                " UNIQUE (" + FavoriteMovieEntry.COLUMN_MOVIE_KEY + ") ON CONFLICT REPLACE);";
 
         sqLiteDatabase.execSQL(SQL_CREATE_POP_MOVIE_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_TOP_RATED_MOVIE_TABLE);

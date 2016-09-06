@@ -1,4 +1,4 @@
-package com.udacity.lorianns.popularmovie2;
+package com.udacity.lorianns.popularmovie2.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;

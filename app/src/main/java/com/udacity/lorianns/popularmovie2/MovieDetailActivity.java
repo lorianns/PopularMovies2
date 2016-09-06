@@ -17,6 +17,5 @@ public class MovieDetailActivity extends AppCompatActivity {
                     .add(R.id.container, new MovieDetailFragment(), DETAILFRAGMENT_TAG)
                     .commit();
         }
-
     }
 }

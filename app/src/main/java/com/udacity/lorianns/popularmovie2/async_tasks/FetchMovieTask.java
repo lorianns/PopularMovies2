@@ -1,4 +1,4 @@
-package com.udacity.lorianns.popularmovie2;
+package com.udacity.lorianns.popularmovie2.async_tasks;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,7 +6,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.udacity.lorianns.popularmovie2.data.FavoriteMovieContract;
+import com.udacity.lorianns.popularmovie2.BuildConfig;
+import com.udacity.lorianns.popularmovie2.data.MovieContract;
+import com.udacity.lorianns.popularmovie2.entities.MovieEntity;
+import com.udacity.lorianns.popularmovie2.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,7 +66,7 @@ public class FetchMovieTask extends AsyncTask<String, Void, MovieEntity[]> {
         JSONArray movieJsonArray = movieJson.getJSONArray(_LIST);
         MovieEntity[] movieList = new MovieEntity[movieJsonArray.length()];
 
-        // Insert the new weather information into the database
+        // Insert the new movie information into the database
         Vector<ContentValues> cVVector = new Vector<ContentValues>(movieJsonArray.length());
 
         for (int i = 0; i < movieJsonArray.length(); i++) {
@@ -71,52 +74,31 @@ public class FetchMovieTask extends AsyncTask<String, Void, MovieEntity[]> {
             movieList[i] = new MovieEntity(movie);
 
             ContentValues movieValues = new ContentValues();
-            movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_MOVIE_ID, movieList[i].getApiId());
-            movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_IMAGE, movieList[i].getImagePath());
-            movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_TITLE, movieList[i].getTitle());
-            movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_SYNOPSIS, movieList[i].getOverview());
-            movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_RATING, movieList[i].getRating());
-            movieValues.put(FavoriteMovieContract.MovieEntry.COLUMN_RELEASE_DATE, movieList[i].getReleaseDate());
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movieList[i].getApiId());
+            movieValues.put(MovieContract.MovieEntry.COLUMN_IMAGE, movieList[i].getImagePath());
+            movieValues.put(MovieContract.MovieEntry.COLUMN_TITLE, movieList[i].getTitle());
+            movieValues.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, movieList[i].getOverview());
+            movieValues.put(MovieContract.MovieEntry.COLUMN_RATING, movieList[i].getRating());
+            movieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, movieList[i].getReleaseDate());
             cVVector.add(movieValues);
         }
 
-        int inserted = 0;
         Uri uri = null;
 
-
             if(sortBy.equals(mContext.getString(R.string.pref_sort_by_top_rated)))
-                uri = FavoriteMovieContract.TopRatedMovieEntry.CONTENT_URI;
+                uri = MovieContract.TopRatedMovieEntry.CONTENT_URI;
             else if(sortBy.equals(mContext.getString(R.string.pref_sort_by_default))){
-                uri = FavoriteMovieContract.PopMovieEntry.CONTENT_URI;
+                uri = MovieContract.PopMovieEntry.CONTENT_URI;
             }
-
 
         // add to database
         if ( cVVector.size() > 0 ) {
-
-            // delete old data so we don't build up an endless history
-            mContext.getContentResolver().delete(FavoriteMovieContract.MovieEntry.CONTENT_URI, null, null);
-
             ContentValues[] cvArray = new ContentValues[cVVector.size()];
             cVVector.toArray(cvArray);
             mContext.getContentResolver().bulkInsert(uri, cvArray);
-
-            // delete old data so we don't build up an endless history
-//            mContext.getContentResolver().delete(FavoriteMovieContract.MovieEntry.CONTENT_URI,
-//                    null,
-//                    null);
-
-//            notifyWeather();
         }
 
-        Log.d(LOG_TAG, "Sync Complete. " + cVVector.size() + " Inserted");
-
-
-
-//        Uri insertedUri = getActivity().getContentResolver().insert(FavoriteMovieContract.MovieEntry.CONTENT_URI,
-//                movieValues);
-
-//        locationId = ContentUris.parseId(insertedUri);
+        Log.d(LOG_TAG, "Sync Complete. ");
 
         return movieList;
     }
@@ -139,7 +121,6 @@ public class FetchMovieTask extends AsyncTask<String, Void, MovieEntity[]> {
 
         // Will contain the raw JSON response as a string.
         String movieJsonStr = null;
-
         String sortBy = params[0];
 
         try {
