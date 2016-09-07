@@ -60,8 +60,10 @@ public class SimpleImageCursorAdapter extends CursorRecyclerViewAdapter<SimpleIm
                 Context context = v.getContext();
 
                 movieEntity.setSelected(true);
-                viewHolder.mborderLineTop.setVisibility(View.VISIBLE);
-                viewHolder.mborderLineBottom.setVisibility(View.VISIBLE);
+                if(viewHolder.mborderLineTop != null){
+                    viewHolder.mborderLineTop.setVisibility(View.VISIBLE);
+                    viewHolder.mborderLineBottom.setVisibility(View.VISIBLE);
+                }
 
                 ((MovieListFragment.Callback) context)
                         .onItemSelected(movieEntity, cursor.getPosition());
@@ -72,11 +74,11 @@ public class SimpleImageCursorAdapter extends CursorRecyclerViewAdapter<SimpleIm
                 .load(cursor.getString(MovieContract.MovieEntry.COL_MOVIE_IMAGE))
                 .into( viewHolder.mImageView);
 
-        if(movieEntity.isSelected()){
+        if(movieEntity.isSelected() && viewHolder.mborderLineTop != null){
             viewHolder.mborderLineTop.setVisibility(View.VISIBLE);
             viewHolder.mborderLineBottom.setVisibility(View.VISIBLE);
         }
-        else {
+        else if(viewHolder.mborderLineTop != null){
             viewHolder.mborderLineTop.setVisibility(View.GONE);
             viewHolder.mborderLineBottom.setVisibility(View.GONE);
         }
