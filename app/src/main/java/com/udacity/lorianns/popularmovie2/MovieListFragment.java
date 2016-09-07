@@ -99,7 +99,7 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
         // Get a reference to the ProgressBar
         progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
 
-        setupRecyclerView(rootView, mRecyclerView);
+        setupRecyclerView(rootView);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_LOADER)) {
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
@@ -109,7 +109,7 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
         return rootView;
     }
 
-    private void setupRecyclerView(View view, RecyclerView recyclerView) {
+    private void setupRecyclerView(View view) {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mImageAdapter);

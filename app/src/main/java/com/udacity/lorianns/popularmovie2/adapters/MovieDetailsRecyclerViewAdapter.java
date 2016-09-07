@@ -192,7 +192,10 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
         holder.rating.setText(String.format(context.getString(R.string.rating), holder.movieEntity.getRating()));
         holder.overview.setText(holder.movieEntity.getOverview());
 
-        Picasso.with(context).load(holder.movieEntity.getImagePath()).into(holder.ivPoster);
+        Picasso.with(context)
+                .load(holder.movieEntity.getImagePath())
+                .error(R.drawable.no_image_available)
+                .into(holder.ivPoster);
 
 
         //Exist?
