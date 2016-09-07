@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -208,6 +206,7 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
         else
             holder.btnFavorite.setImageResource(R.drawable.ic_star_black_50dp);
 
+        cursor.close();
 
         holder.btnFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -222,12 +221,13 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
                     insertData(holder.movieEntity);
                     holder.btnFavorite.setImageResource(R.drawable.ic_star_black_50dp);
                 }
-                else {
+                else if(cursor != null && cursor.getCount() > 0){
                     int cursorDelete = context.getContentResolver().delete(uri, MovieContract.FavoriteMovieEntry.COLUMN_MOVIE_KEY + "= ?", new String[] {movieEntity.getId()});
                     if(cursorDelete > 0)
                         holder.btnFavorite.setImageResource(R.drawable.ic_star_border_black_50dp);
                 }
 
+                cursor.close();
             }
         });
     }

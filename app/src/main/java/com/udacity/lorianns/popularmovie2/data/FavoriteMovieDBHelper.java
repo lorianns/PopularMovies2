@@ -55,9 +55,9 @@ public class FavoriteMovieDBHelper extends SQLiteOpenHelper {
                 FavoriteMovieEntry._ID + " INTEGER PRIMARY KEY," +
                 FavoriteMovieEntry.COLUMN_MOVIE_KEY + " TEXT UNIQUE NOT NULL ," +
 
-                // Set up the movie_key column as a foreign key to movie table.
+                // Set up the location column as a foreign key to location table.
                 " FOREIGN KEY (" + FavoriteMovieEntry.COLUMN_MOVIE_KEY + ") REFERENCES " +
-                MovieEntry.TABLE_NAME + " (" + MovieEntry._ID + ")  ON DELETE CASCADE" +
+                MovieEntry.TABLE_NAME + " (" + MovieEntry._ID + ") " + //ON DELETE CASCADE
                 ");";
 
         final String SQL_CREATE_POP_MOVIE_TABLE = "CREATE TABLE " + PopMovieEntry.TABLE_NAME + " (" +

@@ -133,10 +133,10 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
                 return true;
             case R.id.action_favorites:
                 selectedLoader = FAVORITE_MOVIE_LOADER;
-//                if(getLoaderManager().getLoader(selectedLoader) == null )
+                if(getLoaderManager().getLoader(selectedLoader) == null )
                     getLoaderManager().initLoader(selectedLoader, null, this);
-//                else
-//                    getLoaderManager().restartLoader(selectedLoader, null, this);
+                else
+                    getLoaderManager().restartLoader(selectedLoader, null, this);
 
                 return true;
         }
@@ -173,7 +173,11 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
     public void onMovieFetchCompleted(MovieEntity[] result) {
 
         if (result != null)
-            getLoaderManager().initLoader(selectedLoader, null, this);
+            if(getLoaderManager().getLoader(selectedLoader) == null )
+                getLoaderManager().initLoader(selectedLoader, null, this);
+            else
+                getLoaderManager().restartLoader(selectedLoader, null, this);
+
 
         progressBar.setVisibility(View.GONE);
 

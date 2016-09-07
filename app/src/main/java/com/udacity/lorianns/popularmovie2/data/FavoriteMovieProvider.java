@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 /**
  * Created by lorianns on 7/10/16.
@@ -213,7 +214,7 @@ public class FavoriteMovieProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        getContext().getContentResolver().notifyChange(uri, null);
+//        getContext().getContentResolver().notifyChange(uri, null);
         return returnUri;
     }
 
@@ -293,13 +294,17 @@ public class FavoriteMovieProvider extends ContentProvider {
                 int returnCount2 = 0;
                 try {
                     for (ContentValues value : values) {
-                        long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, value);
-                        ContentValues favMovieValues = new ContentValues();
-                        favMovieValues.put(MovieContract.PopMovieEntry.COLUMN_MOVIE_KEY, String.valueOf(_id));
-                        db.insert(MovieContract.PopMovieEntry.TABLE_NAME, null, favMovieValues);
-                        if (_id != -1) {
-                            returnCount2++;
+                        long _idParent = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, value);
+
+                        if (_idParent != -1) {
+                            ContentValues favMovieValues = new ContentValues();
+                            favMovieValues.put(MovieContract.PopMovieEntry.COLUMN_MOVIE_KEY, String.valueOf(_idParent));
+                            long _id = db.insert(MovieContract.PopMovieEntry.TABLE_NAME, null, favMovieValues);
+                            if (_id != -1)
+                                returnCount2++;
                         }
+                        else
+                            Log.e("sdf","sdf");
                     }
                     db.setTransactionSuccessful();
                 } finally {
@@ -312,13 +317,17 @@ public class FavoriteMovieProvider extends ContentProvider {
                 int returnCount3 = 0;
                 try {
                     for (ContentValues value : values) {
-                        long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, value);
-                        ContentValues favMovieValues = new ContentValues();
-                        favMovieValues.put(MovieContract.TopRatedMovieEntry.COLUMN_MOVIE_KEY, String.valueOf(_id));
-                        db.insert(MovieContract.TopRatedMovieEntry.TABLE_NAME, null, favMovieValues);
-                        if (_id != -1) {
-                            returnCount3++;
+                        long _idParent = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, value);
+
+                        if (_idParent != -1) {
+                            ContentValues favMovieValues = new ContentValues();
+                            favMovieValues.put(MovieContract.TopRatedMovieEntry.COLUMN_MOVIE_KEY, String.valueOf(_idParent));
+                            long _id  = db.insert(MovieContract.TopRatedMovieEntry.TABLE_NAME, null, favMovieValues);
+                            if (_id != -1)
+                                returnCount3++;
                         }
+                        else
+                            Log.e("sdf","sdf");
                     }
                     db.setTransactionSuccessful();
                 } finally {
