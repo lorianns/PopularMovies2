@@ -3,6 +3,7 @@ package com.udacity.lorianns.popularmovie2;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.udacity.lorianns.popularmovie2.entities.MovieEntity;
 
@@ -36,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements MovieListFragment
     public void onItemSelected(MovieEntity movieEntity, int position) {
         ((MovieListFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.container)).mPosition = position;
+        ((MovieListFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.container)).mRecyclerView.scrollToPosition(position);
 
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
@@ -43,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements MovieListFragment
             // fragment transaction.
             Bundle args = new Bundle();
             args.putParcelable("MOVIE_DATA", movieEntity);
+
+            showDetailsView(true);
 
             MovieDetailFragment fragment = new MovieDetailFragment();
             fragment.setArguments(args);
@@ -55,5 +60,21 @@ public class MainActivity extends AppCompatActivity implements MovieListFragment
             intent.putExtra("MOVIE_DATA", movieEntity);
             startActivity(intent);
         }
+    }
+
+    public void showDetailsView(Boolean flag){
+        if(mTwoPane)
+            if(flag)
+                findViewById(R.id.movie_detail_container).setVisibility(View.VISIBLE);
+            else
+                findViewById(R.id.movie_detail_container).setVisibility(View.GONE);
+    }
+
+    public Boolean isShowedDetailsView(){
+        if(mTwoPane)
+            if(findViewById(R.id.movie_detail_container).getVisibility() == View.VISIBLE)
+                return true;
+
+        return false;
     }
 }

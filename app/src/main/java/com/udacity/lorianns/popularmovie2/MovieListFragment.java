@@ -31,18 +31,18 @@ import com.udacity.lorianns.popularmovie2.entities.MovieEntity;
 public class MovieListFragment extends Fragment implements FetchMovieTask.FetchMovieCallback, LoaderManager.LoaderCallbacks<Cursor> {
     private SimpleImageCursorAdapter mImageAdapter;
 
-    private RecyclerView mRecyclerView;
+    public RecyclerView mRecyclerView;
     public int mPosition = ListView.INVALID_POSITION;
 
     private static final String SELECTED_KEY = "selected_position";
     private static final String SELECTED_LOADER = "selected_loader";
+    private static final String DETAILS_VIEW = "details_view";
 
     private static final int POP_MOVIE_LOADER = 0;
     private static final int TOP_RATED_MOVIE_LOADER = 1;
     private static final int FAVORITE_MOVIE_LOADER = 2;
 
     private int selectedLoader = POP_MOVIE_LOADER;
-    private int selectedPosition;
 
     private ProgressBar progressBar;
 
@@ -103,6 +103,7 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_LOADER)) {
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
+
             getLoaderManager().restartLoader(selectedLoader, null, this);
         }
 
@@ -120,6 +121,13 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
+        // Clear position
+        mPosition = ListView.INVALID_POSITION;
+        mImageAdapter.selectedPos = mPosition;
+
+        ((MainActivity)getActivity()).showDetailsView(false);
+
         int id = item.getItemId();
 
         switch (id) {
@@ -153,6 +161,7 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
         // so check for that before storing.
         if (mPosition != ListView.INVALID_POSITION) {
             outState.putInt(SELECTED_KEY, mPosition);
+            outState.putBoolean(DETAILS_VIEW, ((MainActivity)getActivity()).isShowedDetailsView());
         }
 
         outState.putInt(SELECTED_LOADER, selectedLoader);
@@ -187,6 +196,8 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
     public void onActivityCreated(Bundle savedInstanceState) {
         if(savedInstanceState == null)
             fetchMovieData(getString(R.string.pref_sort_by_default));
+        else if(savedInstanceState.getBoolean(DETAILS_VIEW))
+                ((MainActivity)getActivity()).showDetailsView(true);
 
         super.onActivityCreated(savedInstanceState);
     }
@@ -225,10 +236,8 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mImageAdapter.swapCursor(data);
         if (mPosition != ListView.INVALID_POSITION) {
-//             If we don't need to restart the loader, and there's a desired position to restore
-//             to, do so now.
-//            mImageAdapter.smoothScrollToPosition(mPosition);
             mRecyclerView.scrollToPosition(mPosition);
+            mImageAdapter.selectedPos = mPosition;
         }
 
         progressBar.setVisibility(View.GONE);
@@ -238,4 +247,5 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
     public void onLoaderReset(Loader<Cursor> loader) {
         mImageAdapter.swapCursor(null);
     }
+
 }
