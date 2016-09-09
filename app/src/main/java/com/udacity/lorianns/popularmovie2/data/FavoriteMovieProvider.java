@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 /**
  * Created by lorianns on 7/10/16.
@@ -303,8 +302,6 @@ public class FavoriteMovieProvider extends ContentProvider {
                             if (_id != -1)
                                 returnCount2++;
                         }
-                        else
-                            Log.e("sdf","sdf");
                     }
                     db.setTransactionSuccessful();
                 } finally {
@@ -326,8 +323,6 @@ public class FavoriteMovieProvider extends ContentProvider {
                             if (_id != -1)
                                 returnCount3++;
                         }
-                        else
-                            Log.e("sdf","sdf");
                     }
                     db.setTransactionSuccessful();
                 } finally {

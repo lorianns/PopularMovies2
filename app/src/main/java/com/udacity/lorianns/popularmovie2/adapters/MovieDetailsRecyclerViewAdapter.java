@@ -44,7 +44,7 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
 
         public final View mView;
 
-        TextView mTextView;
+        TextView mTextView, mReviewTitle;
         TextView title, releaseYear, rating, overview;
         TextView content, author;
         ImageView ivPoster;
@@ -72,6 +72,7 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
                     break;
 
                 case TYPE_REVIEW:
+                    mReviewTitle = (TextView) view.findViewById(R.id.tvReviewTitle);
                     content = (TextView) view.findViewById(R.id.tvContent);
                     author = (TextView) view.findViewById(R.id.tvAuthor);
                     break;
@@ -148,6 +149,10 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
             case TYPE_REVIEW:
                 if(mTrailerValues.size() > 0)
                     position = position - mTrailerValues.size();
+
+                if(position - 1 > 0)
+                    holder.mReviewTitle.setVisibility(View.GONE);
+
                 holder.mReviewEntity = mReviewValues.get(position - 1);
                 setReviewData(holder);
                 break;
@@ -229,7 +234,6 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
                     if(cursorDelete > 0)
                         holder.btnFavorite.setImageResource(R.drawable.ic_star_border_black_50dp);
                 }
-
                 cursor.close();
             }
         });
@@ -250,6 +254,7 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
     }
 
     private void setReviewData(final ViewHolder holder) {
+
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -263,7 +268,7 @@ public class MovieDetailsRecyclerViewAdapter extends RecyclerView.Adapter<MovieD
         holder.author.setText(holder.mReviewEntity.getAuthor());
     }
 
-    // insert data into database
+    // Insert data into DB
     public void insertData(MovieEntity movieEntity){
         ContentValues favMovieValues = new ContentValues();
         favMovieValues.put(MovieContract.FavoriteMovieEntry.COLUMN_MOVIE_KEY, movieEntity.getId());
